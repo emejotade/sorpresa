@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorpresa ❤️</title>
+
+<style>
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background-color: #ffd6e8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 360px;
+        padding: 20px;
+        text-align: center;
+        transition: opacity 1s ease;
+    }
+
+    @keyframes heartbeat {
+        0% { transform: rotate(-45deg) scale(1); }
+        25% { transform: rotate(-45deg) scale(1.05); }
+        50% { transform: rotate(-45deg) scale(1); }
+        75% { transform: rotate(-45deg) scale(1.05); }
+        100% { transform: rotate(-45deg) scale(1); }
+    }
+
+    @keyframes unlock {
+        to { transform: translateY(-40px) rotate(-20deg); opacity: 0; }
+    }
+
+    .lock-arc {
+        width: 100px;
+        height: 60px;
+        border: 8px solid #ff4d88;
+        border-bottom: none;
+        border-radius: 50px 50px 0 0;
+        margin: 0 auto -15px;
+        transition: transform 1s ease, opacity 1s ease;
+    }
+
+    .lock-arc.open {
+        animation: unlock 1s forwards;
+    }
+
+    .heart-lock {
+        width: 120px;
+        height: 110px;
+        background-color: #ff4d88;
+        position: relative;
+        transform: rotate(-45deg);
+        margin: 0 auto 25px;
+        animation: heartbeat 1.5s infinite;
+    }
+
+    .heart-lock::before,
+    .heart-lock::after {
+        content: "";
+        width: 120px;
+        height: 110px;
+        background-color: #ff4d88;
+        border-radius: 50%;
+        position: absolute;
+    }
+
+    .heart-lock::before {
+        top: -60px;
+        left: 0;
+    }
+
+    .heart-lock::after {
+        left: 60px;
+        top: 0;
+    }
+
+    .date-inputs {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .date-inputs input {
+        width: 70px;
+        padding: 14px;
+        font-size: 18px;
+        border-radius: 10px;
+        border: none;
+        text-align: center;
+    }
+
+    .year {
+        width: 100px;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 20px;
+        padding: 14px;
+        font-size: 18px;
+        border-radius: 12px;
+        border: none;
+        background-color: #ff4d88;
+        color: white;
+        cursor: pointer;
+    }
+
+    .final {
+        display: none;
+        text-align: center;
+        animation: fadeIn 1.5s ease forwards;
+    }
+
+    .final img {
+        width: 100%;
+        border-radius: 20px;
+        margin-bottom: 20px;
+    }
+
+    .final-text {
+        font-size: 30px;
+        color: #ff2f6d;
+        font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        top: -10px;
+        animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+        to {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Sonidos -->
+<audio id="heartbeatSound" src="heartbeat.mp3" loop></audio>
+<audio id="loveSound" src="love.mp3"></audio>
+
+<div class="container" id="lockContainer">
+    <div class="lock-arc" id="arc"></div>
+    <div class="heart-lock"></div>
+
+    <div class="date-inputs">
+        <input type="tel" id="day" placeholder="DD" maxlength="2">
+        <input type="tel" id="month" placeholder="MM" maxlength="2">
+        <input type="tel" id="year" placeholder="AAAA" maxlength="4" class="year">
+    </div>
+
+    <button onclick="unlock()">Desbloquear ❤️</button>
+</div>
+
+<div class="final" id="final">
+    <img src="foto.jpg" alt="Nuestra foto ❤️">
+    <div class="final-text">
+        Te amo millones!<br>
+        Gracias por ser mi hogar.
+    </div>
+</div>
+
+<script>
+const heartbeat = document.getElementById("heartbeatSound");
+const love = document.getElementById("loveSound");
+
+// Inicia latido al tocar por primera vez
+document.body.addEventListener("click", () => {
+    if (heartbeat.paused) heartbeat.play();
+}, { once: true });
+
+function unlock() {
+    const day = document.getElementById("day").value;
+    const month = document.getElementById("month").value;
+    const year = document.getElementById("year").value;
+
+    if (day === "28" && month === "04" && year === "2024") {
+
+        // Vibración
+        if (navigator.vibrate) {
+            navigator.vibrate([200, 100, 200]);
+        }
+
+        // Sonidos
+        heartbeat.pause();
+        love.play();
+
+        document.getElementById("arc").classList.add("open");
+        confettiExplosion();
+
+        setTimeout(() => {
+            document.getElementById("lockContainer").style.opacity = 0;
+        }, 1000);
+
+        setTimeout(() => {
+            document.getElementById("lockContainer").style.display = "none";
+            document.getElementById("final").style.display = "block";
+        }, 2000);
+    } else {
+        alert("Esa no es nuestra fecha 💔");
+    }
+}
+
+function confettiExplosion() {
+    for (let i = 0; i < 80; i++) {
+        const confetti = document.createElement("div");
+        confetti.classList.add("confetti");
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.backgroundColor =
+            ["#ff4d88", "#ffd6e8", "#ff85b3"][Math.floor(Math.random() * 3)];
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + "s";
+        document.body.appendChild(confetti);
+
+        setTimeout(() => confetti.remove(), 3000);
+    }
+}
+</script>
+
+</body>
+</html>
